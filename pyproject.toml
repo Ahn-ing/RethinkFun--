@@ -1,0 +1,53 @@
+[tool.ruff]
+# 代码最大行宽（lint + format 都会参考）
+line-length = 88
+
+# 目标 Python 版本（影响：语法/规则是否启用、比如 match 语句等）
+target-version = "py310"
+
+# 需要检查的文件/目录（默认会递归扫描项目）
+# 对于课程工程，一般不必写；写了更可控。
+include = ["*.py", "*.pyi", "**/pyproject.toml"]
+
+# 排除不需要检查的目录/文件（常见：虚拟环境、缓存、输出目录等）
+exclude = [
+  ".git",
+  ".venv",
+  "venv",
+  "__pycache__",
+  "build",
+  "dist",
+]
+
+[tool.ruff.lint]
+# 选择启用哪些规则集（从“基础”开始：错误/风格/简单 bug）
+# E/F：pycodestyle/pyflakes（最核心，强烈建议）
+# I：import 排序（类似 isort）
+# UP：升级到更现代的 Python 写法（pyupgrade）
+select = ["E", "F", "I", "UP"]
+
+# 显式忽略一些规则（基础项目里常见的取舍）
+ignore = [
+  "E501", # 行过长：通常交给 formatter 处理；或你不想被 lint 卡住
+]
+
+# 每个文件允许单独忽略（如：__init__.py 导出、notebook 导出的脚本等）
+per-file-ignores = { "__init__.py" = ["F401"] }
+
+# 自动修复：允许哪些规则被 --fix 修复（默认 safe fixes）
+# 设为 true 表示允许修复（但仍需你运行 ruff --fix）
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.format]
+# 是否使用双引号（Ruff formatter 的风格选择之一）
+quote-style = "double"
+
+# 缩进风格：空格（Python 基本都用 space）
+indent-style = "space"
+
+# 是否保留“魔法尾逗号”带来的换行格式（常见于 Black 风格）
+skip-magic-trailing-comma = false
+
+# 行尾风格：自动（Windows/跨平台项目通常用 auto）
+line-ending = "auto"

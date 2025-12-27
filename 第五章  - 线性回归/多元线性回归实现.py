@@ -45,6 +45,7 @@ class MLR:
         self.weights[1] -= self.lr * grad_w1
         self.weights[2] -= self.lr * grad_w2
 
+
 if __name__ == "__main__":
     model = MLR(X, y)
     for epoch in range(10000):

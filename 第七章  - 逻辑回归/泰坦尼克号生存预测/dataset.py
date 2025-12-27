@@ -1,6 +1,7 @@
-import torch
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
+import torch
 from torch.utils.data import Dataset
 
 g = torch.Generator().manual_seed(26)
@@ -12,7 +13,7 @@ enc_cols = ["Sex", "Embarked"]
 
 # 数据清洗
 def load_data(filepath=None):
-    if filepath == None:
+    if filepath is None:
         candidates = [
             Path("titanic")
             / "train.csv",  # 推荐：相对路径（从“第七章  - 逻辑回归”目录启动时可用）
@@ -80,11 +81,11 @@ class TitanicDataset(Dataset):
     def splitData(self, v_ratio):
         data_size = self.__len__()
         valid_ds_size = int(v_ratio * data_size)
-        train_ds_size = data_size - valid_ds_size 
+        train_ds_size = data_size - valid_ds_size
         # 需要整数
-        return torch.utils.data.random_split(self,\
-                                              [train_ds_size, valid_ds_size],\
-                                                generator=g)
+        return torch.utils.data.random_split(
+            self, [train_ds_size, valid_ds_size], generator=g
+        )
 
 
 # 保存清洗好的数据
