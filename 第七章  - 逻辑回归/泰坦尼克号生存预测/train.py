@@ -49,5 +49,19 @@ for epoch in range(epochs):
     print(f'Training Accuracy {correct/len(train_ds)}')
     print()
 
+# 验证集评估模型性能
+model.eval()
+with torch.no_grad():
+    valid_dl = DataLoader(valid_ds, batch_size=256, shuffle=True)
+    correct = 0
+    for x, labels in valid_dl:
+        y_pred = model(x).squeeze(1)
+        labels = labels.float().view(-1)
+
+        preds = (y_pred >= 0.5).float()
+        correct += (preds == labels).sum().item()
+
+    print(f'Valid_Accuracy: {correct/len(valid_ds)}')
+
 
 
