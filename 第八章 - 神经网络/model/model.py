@@ -12,7 +12,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # 定义模型
 class MLP:
-    def __init__(self, inputs: torch.tensor, input_dim=None):
+    def __init__(self, inputs: torch.Tensor, input_dim=None): # 类型提示：torch.tensor 应为 torch.Tensor
         self.x = inputs.to(device)  # 对于模型来说，输入，权重，偏置要放在同一device中
         if input_dim is None:
             input_dim = self._get_input_dim(self.x)
@@ -34,7 +34,7 @@ class MLP:
     def _init_param(self):
         for i in range(len(self.layers_dim) - 1):
             fan_in, fan_out = self.layers_dim[i], self.layers_dim[i+1]  # 合理利用继承关系
-            w = torch.randn(fan_in, fan_out, device=device)
+            w = torch.randn(fan_in, fan_out, device=device)/torch.sqrt(torch.tensor(2.0/fan_in))
             self.w.append(w)
             b = torch.zeros(fan_out, device=device)
             self.b.append(b)
@@ -45,7 +45,7 @@ class MLP:
 
     # 定义激活函数
     # ReLu
-    def Relu(self, logits: torch.tensor):
+    def Relu(self, logits: torch.Tensor):
         return torch.clamp(logits, min=0)
         # 掩码实现
         # mask = logits<0
@@ -54,7 +54,7 @@ class MLP:
 
         # softmax
 
-    def softmax(self, logits: torch.tensor):
+    def softmax(self, logits: torch.Tensor):
         l_exp = torch.exp(
             logits - logits.max(dim=1, keepdim=True).values  # keepdim=True方便广播
         )  # 定义域为非负数很安全，不会数值溢出
@@ -63,7 +63,7 @@ class MLP:
 
     def _forward(self, x):
         x = x.to(device)
-        for i in range(len(self.layers_dim) - 2):  # 这里要减2，因为输入层没有计算
+        for i in range(len(self.w) - 1):  
             x = self.linear_layer(x, self.w[i], self.b[i])
             x = self.Relu(x)
         x = self.linear_layer(x, self.w[-1], self.b[-1])
