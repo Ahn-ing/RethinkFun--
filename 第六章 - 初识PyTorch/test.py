@@ -1,5 +1,5 @@
-import torch
 import numpy as np
+import torch
 
 # 1D Tensor
 t1 = torch.tensor([1, 2, 3], dtype=torch.float32)
