@@ -4,7 +4,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import torch
-from dataset import train_dl
+from dataset import test_dl, train_dl
 from loss_func import CrossEntropyLoss
 from model import MLP
 
@@ -84,3 +84,17 @@ for epoch in range(epochs):
     print()
 
 
+# 模型评估
+with torch.no_grad():
+    correct = 0
+    total = 0
+    for x , label in test_dl:
+        x = x.to(device)
+        label = label.view(-1).to(device)
+        y_hat = model._forward(x)
+        pred_idx = y_hat.argmax(dim=1)
+        correct += (pred_idx == label).sum().item()
+        total += label.numel()
+    
+    acc = correct/total
+    print(f'Test_Accuracy: {acc*100:.2f}%')
