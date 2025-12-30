@@ -1,7 +1,8 @@
 import torch
 from torch.utils.data import DataLoader, Dataset  # noqa: F401
 
-__package__ = 'dataset' 
+__package__ = "dataset"
+
 
 class MNISTDataset(Dataset):
     def __init__(self, filepath, mean=None, std=None):
@@ -36,7 +37,9 @@ class MNISTDataset(Dataset):
                 images.append(
                     list(map(float, sample[1:]))
                 )  # 输入是字符串需要处理，不然不能转化为tensor
-                labels.append(list(map(int, sample[0])))
+                labels.append(
+                    int(sample[0])
+                )  # 这里要使得最终的标签列形状为(n)，如果是(n,1)，后面独热编码时就会自动广播
         return images, labels
 
     def __len__(self):
@@ -49,13 +52,16 @@ class MNISTDataset(Dataset):
 
 
 # 定义数据加载器
+pin = torch.cuda.is_available()
 batch_size = 64
 trainfile = r"第八章 - 神经网络\mnist\mnist_train.csv\mnist_train.csv"
 train_ds = MNISTDataset(trainfile)
-train_dl = DataLoader(train_ds, batch_size=batch_size, shuffle=True)
+train_dl = DataLoader(
+    train_ds, batch_size=batch_size, shuffle=True, pin_memory=pin
+)  # pin_memory=True 会让 DataLoader 把 CPU tensor 放到“页锁定内存”，这样 CPU → GPU 拷贝更快。
 testfile = r"第八章 - 神经网络\mnist\mnist_test.csv\mnist_test.csv"
 test_ds = MNISTDataset(testfile)
-test_dl = DataLoader(test_ds, batch_size=batch_size, shuffle=False)
+test_dl = DataLoader(test_ds, batch_size=batch_size, shuffle=False, pin_memory=pin)
 
 if __name__ == "__main__":
     x, y = next(iter(test_dl))  # 取第一个批次的数据查看
