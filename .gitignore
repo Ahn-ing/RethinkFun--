@@ -1,0 +1,43 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ===== 虚拟环境 / 依赖缓存 =====
+.venv/
+venv/
+ENV/
+env/
+pip-wheel-metadata/
+*.egg-info/
+dist/
+build/
+
+# ===== 测试 / 工具缓存 =====
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+
+# ===== Jupyter =====
+.ipynb_checkpoints/
+
+# ===== OS / IDE =====
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ===== 数据集 / 大文件（按你当前仓库内容定制）=====
+*.zip
+*.7z
+*.rar
+
+# MNIST / CSV 数据（你现在 pull 冲突的就是这些）
+第八章 - 神经网络/mnist*/
+第八章 - 神经网络/**/mnist*.csv
+第八章 - 神经网络/**/mnist*.csv.zip
+第八章 - 神经网络/**/mnist.zip
+
+# 如需更宽泛地忽略所有 CSV（不一定建议）
+# *.csv
