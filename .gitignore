@@ -38,6 +38,8 @@ Thumbs.db
 第八章 - 神经网络/**/mnist*.csv
 第八章 - 神经网络/**/mnist*.csv.zip
 第八章 - 神经网络/**/mnist.zip
+第十章 - 卷积神经网络/data/archive
+第十章 - 卷积神经网络/data/PetImages
 
 # 如需更宽泛地忽略所有 CSV（不一定建议）
 # *.csv
