@@ -51,7 +51,21 @@ class ImageDataset(Dataset):
         train_size = int(data_size*train_ratio)
         test_size = data_size-train_size
         return random_split(self, [train_size, test_size], self.g)
+    
+class SubsetWithTransform(Dataset):
+    def __init__(self, subset, transform=None):
+        super().__init__()
+        self.subset = subset
+        self.transform = transform
+    
+    def __len__(self):
+        return len(self.subset)
 
+    def __getitem__(self, index):
+        x, y = self.subset[index]
+        if self.transform:
+            x = self.transform(x)
+        return x, y
 
 
 if __name__ == "__main__":
