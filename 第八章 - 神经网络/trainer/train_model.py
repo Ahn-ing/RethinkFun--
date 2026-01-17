@@ -78,7 +78,7 @@ for epoch in range(epochs):
         total += label.numel()  # 是 number of elements 的意思：返回这个 tensor 里一共有多少个元素（一个 Python int）。
     acc = correct / total
     print(
-        f"epoch {epoch+1}: loss {total_loss / len(train_set)}"
+        f"epoch {epoch + 1}: loss {total_loss / len(train_set)}"
     )  # len(train_set)是batch的数量
     print(f"Train_Accuracy: {acc * 100:.2f}%")
     print()
@@ -88,13 +88,13 @@ for epoch in range(epochs):
 with torch.no_grad():
     correct = 0
     total = 0
-    for x , label in test_dl:
+    for x, label in test_dl:
         x = x.to(device)
         label = label.view(-1).to(device)
         y_hat = model._forward(x)
         pred_idx = y_hat.argmax(dim=1)
         correct += (pred_idx == label).sum().item()
         total += label.numel()
-    
-    acc = correct/total
-    print(f'Test_Accuracy: {acc*100:.2f}%')
+
+    acc = correct / total
+    print(f"Test_Accuracy: {acc * 100:.2f}%")

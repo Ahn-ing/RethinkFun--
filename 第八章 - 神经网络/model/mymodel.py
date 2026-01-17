@@ -29,7 +29,9 @@ class MLP:
                 self.layers_dim[i],
                 self.layers_dim[i + 1],
             )  # 合理利用继承关系
-            w = torch.randn(fan_in, fan_out, device=device) * math.sqrt(2.0 / fan_in)# 注意公式
+            w = torch.randn(fan_in, fan_out, device=device) * math.sqrt(
+                2.0 / fan_in
+            )  # 注意公式
 
             self.w.append(w)
             b = torch.zeros(fan_out, device=device)

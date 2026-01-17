@@ -87,12 +87,12 @@ def main():
             acc_loss += loss.item()
             if (step + 1) % 100 == 0:
                 avg_loss = acc_loss / 100
-                print(f"Step {step+1}: Average Loss {avg_loss:.4f}")
+                print(f"Step {step + 1}: Average Loss {avg_loss:.4f}")
                 acc_loss = 0.0
 
         acc = evaluate(model, val_dl, device)
         print()
-        print(f"epoch {epoch+1}: Validation Accuracy {acc*100:.2f}%")
+        print(f"epoch {epoch + 1}: Validation Accuracy {acc * 100:.2f}%")
         print()
 
 

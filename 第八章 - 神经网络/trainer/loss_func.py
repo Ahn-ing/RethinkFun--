@@ -16,7 +16,7 @@ class CrossEntropyLoss:
     # one_hot_encoding
     def one_hot_encoding(self, labels: torch.Tensor):
         y_one_hot = torch.zeros_like(self.y_hat)
-        y_one_hot[torch.arange(self.N), labels] = 1 # 这里两个的形状一定要都是(n，)
+        y_one_hot[torch.arange(self.N), labels] = 1  # 这里两个的形状一定要都是(n，)
         return y_one_hot
 
     def compute_loss(self):

@@ -18,7 +18,7 @@ import torch
 # t_np = torch.tensor(arr)
 # print(t_np)
 
-test_tensor = torch.randint(0,10,(3,3))
+test_tensor = torch.randint(0, 10, (3, 3))
 arg_idx = test_tensor.argmax(dim=1)
 max_idx = test_tensor.max(dim=1).indices
 print(test_tensor)

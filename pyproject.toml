@@ -7,7 +7,7 @@ target-version = "py310"
 
 # 需要检查的文件/目录（默认会递归扫描项目）
 # 对于课程工程，一般不必写；写了更可控。
-include = ["*.py", "*.pyi", "**/pyproject.toml"]
+include = ["*.py", "*.pyi", "**/pyproject.toml", "*.ipynb"]
 
 # 排除不需要检查的目录/文件（常见：虚拟环境、缓存、输出目录等）
 exclude = [
