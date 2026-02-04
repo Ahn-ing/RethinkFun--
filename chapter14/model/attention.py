@@ -1,13 +1,14 @@
-import torch
-import torch.nn as nn
 import sys
 from pathlib import Path
 
+import torch
+import torch.nn as nn
+
 sys.path.append(str(Path(__file__).parent.parent.resolve()))
 
-from torch.utils.data import DataLoader
-from encoder import Encoder
 from data14 import TranslationDataset
+from encoder import Encoder
+from torch.utils.data import DataLoader
 
 
 class Attention(nn.Module):
@@ -18,16 +19,16 @@ class Attention(nn.Module):
         # 输出代表注意力的logit值
         self.logit = nn.Linear(hid_dim, 1, bias=False)
 
-    def forward(self, decoder_x:torch.Tensor, encoder_h:torch.Tensor, mask):
-        # 将decoder_x分别与encoder_h合并
-        # decoder_x: [1, B, H]    encoder_h: [S, B, 2H]
-        decoder_x = decoder_x.permute(1, 0, 2) # [B, 1, H]
-        encoder_h = encoder_h.permute(1, 0, 2) # [B, S, 2H]
+    def forward(self, decoder_init_h:torch.Tensor, encoder_final_h:torch.Tensor, mask):
+        # 将decoder_init_h分别与encoder_final_h合并
+        # decoder_init_h: [1, B, H]    encoder_final_h: [S, B, 2H]
+        decoder_init_h = decoder_init_h.permute(1, 0, 2) # [B, 1, H]
+        encoder_final_h = encoder_final_h.permute(1, 0, 2) # [B, S, 2H]
 
-        src_len = encoder_h.shape[1]
-        decoder_x = decoder_x.repeat(1, src_len, 1) # [B, S, H]
+        src_len = encoder_final_h.shape[1]
+        decoder_init_h = decoder_init_h.repeat(1, src_len, 1) # [B, S, H]
 
-        union = torch.cat([decoder_x, encoder_h], dim=2) # [B, S, 3H]
+        union = torch.cat([decoder_init_h, encoder_final_h], dim=2) # [B, S, 3H]
         energy = torch.tanh(self.fc(union)) # [B, S, H]
 
         attention = self.logit(energy).squeeze(2)  # [B, S]
@@ -52,8 +53,8 @@ if __name__ == "__main__":
     demo_encoder = Encoder(16000, 16, 10)
     demo_outputs, demo_hidden_concat, demo_cell_concat = demo_encoder(demo_src, demo_lens)
     # 初始化演示输入
-    demo_decoder_x = torch.randn((1,64,10))
+    demo_decoder_init_h = torch.randn((1,64,10))
     demo_attention = Attention(10)
-    demo_a = demo_attention(demo_decoder_x, demo_outputs, demo_src==1)
+    demo_a = demo_attention(demo_decoder_init_h, demo_outputs, demo_src==1)
     print(demo_a.shape)
     print(demo_a)
