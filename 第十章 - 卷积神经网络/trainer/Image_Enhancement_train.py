@@ -5,9 +5,9 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import torch
 import torch.nn as nn
-from data import ImageDataset, SubsetWithTransform
+from data10 import ImageDataset, SubsetWithTransform
 from eval_func import evaluate
-from model import CNNModel
+from model10 import CNNModel
 from torch.utils.data import DataLoader
 from torchvision import transforms
 

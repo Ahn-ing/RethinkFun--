@@ -12,7 +12,7 @@ DATA_DIR = os.path.abspath(os.path.join(ROOT, "第十章 - 卷积神经网络"))
 if DATA_DIR not in sys.path:
     sys.path.insert(0, DATA_DIR)
     
-from data import ImageDataset, SubsetWithTransform  # noqa: E402
+from data10 import ImageDataset, SubsetWithTransform  # noqa: E402
 from trainer.eval_func import evaluate  # noqa: E402
 
 # config
