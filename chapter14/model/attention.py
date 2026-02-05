@@ -8,8 +8,9 @@ __package__ = "model"
 sys.path.append(str(Path(__file__).parent.parent.resolve()))
 
 from data14 import TranslationDataset
-from encoder import Encoder
 from torch.utils.data import DataLoader
+
+from .encoder import Encoder
 
 
 class Attention(nn.Module):

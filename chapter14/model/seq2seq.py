@@ -17,11 +17,13 @@ class Seq2Seq(nn.Module):
         device=None,
     ):
         super().__init__()
-        self.encoder = encoder(en_vocab_size, emb_dim, hid_dim, pad_id, n_layers)
-        self.attention = attention(hid_dim)
+        self.encoder = encoder(en_vocab_size, emb_dim, hid_dim, pad_id, n_layers).to(
+            device=device
+        )
+        self.attention = attention(hid_dim).to(device=device)
         self.decoder = decoder(
             2 * hid_dim, hid_dim, emb_dim, zh_vocab_size, pad_id, self.attention
-        )
+        ).to(device=device)
         self.zh_vocab_size = zh_vocab_size
         self.PAD_ID = pad_id
         self.device = (

@@ -22,7 +22,7 @@ EOS_ID = sp_en.eos_id()
 en_vocab = Path(__file__).parent.resolve() / "en_bpe.vocab"
 zh_vocab = Path(__file__).parent.resolve() / "zh_bpe.vocab"
 
-EN_VOCAB_SIZE = sum(1 for line in en_vocab.open("r", encoding="utf-8") if line.strip())
+EN_VOCAB_SIZE = sp_en.GetPieceSize()
 ZH_VOCAB_SIZE = sum(1 for line in zh_vocab.open("r", encoding="utf-8") if line.strip())
 
 
