@@ -1,4 +1,12 @@
 from .dataset import TranslationDataset
-from .dictionary.build_dict import BOS_ID, EOS_ID, PAD_ID, tokenize_cn, tokenize_en
+from .dictionary.build_dict import (
+    BOS_ID,
+    EN_VOCAB_SIZE,
+    EOS_ID,
+    PAD_ID,
+    ZH_VOCAB_SIZE,
+    tokenize_cn,
+    tokenize_en,
+)
 
 __all__ = ['BOS_ID', 'EOS_ID', 'PAD_ID', 'tokenize_cn', 'tokenize_en']

@@ -4,6 +4,7 @@ from pathlib import Path
 import torch
 import torch.nn as nn
 
+__package__ = "model"
 sys.path.append(str(Path(__file__).parent.parent.resolve()))
 
 from data14 import TranslationDataset
@@ -33,7 +34,7 @@ class Attention(nn.Module):
 
         attention = self.logit(energy).squeeze(2)  # [B, S]
          # mask标志哪些位置为<pad>,对于填充的位置，注意力值为一个大的负值。这样经过softmax就为0。
-        mask = mask.permute(1, 0)
+        mask = mask.permute(1, 0) # [S, B] -> [B, S]
         attention[mask] = -1e10
         return torch.softmax(attention, dim=1) # [B, S]
     
@@ -50,7 +51,7 @@ if __name__ == "__main__":
         demo_lens = src_lens
         print(demo_src.shape)
         break
-    demo_encoder = Encoder(16000, 16, 10)
+    demo_encoder = Encoder(16000, 16, 10, pad_id=1)
     demo_outputs, demo_hidden_concat, demo_cell_concat = demo_encoder(demo_src, demo_lens)
     # 初始化演示输入
     demo_decoder_init_h = torch.randn((1,64,10))

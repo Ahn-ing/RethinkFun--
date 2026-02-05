@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 
+__package__ = "model"
 sys.path.append(str(Path(__file__).parent.parent.resolve()))
 
 import torch
@@ -10,10 +11,11 @@ from torch.utils.data import DataLoader
 
 
 class Encoder(nn.Module):
-    def __init__(self, vocab_size, emb_dim, hid_dim, n_layers=3):
+    def __init__(self, vocab_size, emb_dim, hid_dim, pad_id, n_layers=3):
         super().__init__()
+        self.PAD_ID = pad_id
         self.n_layers = n_layers
-        self.embedding = nn.Embedding(vocab_size, emb_dim, padding_idx=PAD_ID)
+        self.embedding = nn.Embedding(vocab_size, emb_dim, padding_idx=pad_id)
         self.bi_lstm = nn.LSTM(
             input_size=emb_dim, hidden_size=hid_dim, num_layers=self.n_layers, bidirectional=True
         )
@@ -29,7 +31,7 @@ class Encoder(nn.Module):
         outputs, (hidden, cell) = self.bi_lstm(packed)
 
         #将 PackedSequence 类型的输出还原成带 padding 的标准 Tensor，方便后续处理。
-        outputs, _ = nn.utils.rnn.pad_packed_sequence(outputs)
+        outputs, _ = nn.utils.rnn.pad_packed_sequence(outputs, padding_value=self.PAD_ID)
         
         # 重塑隐藏状态和细胞状态: [n_layers * 2, batch, hid_dim] -> [n_layers, 2, batch, hid_dim]
         hidden:torch.Tensor = hidden.view(self.n_layers, 2, -1, hidden.size(2))
@@ -65,7 +67,7 @@ if __name__ == "__main__":
         demo_lens = src_lens
         print(demo_src.shape)
         break
-    demo_encoder = Encoder(16000, 16, 10)
+    demo_encoder = Encoder(16000, 16, 10, PAD_ID)
     demo_outputs, demo_hidden_concat, demo_cell_concat = demo_encoder(demo_src, demo_lens)
     print('outputs.shape', demo_outputs.shape)
     print('hidden.shape', demo_hidden_concat.shape)
