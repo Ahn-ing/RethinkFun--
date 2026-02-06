@@ -29,8 +29,10 @@ def train(
 
     for step, batch in enumerate(dataloader):
         src, trg, src_lens, _ = batch  # src: [S, B], trg: [S_t, B]
-        src = src.to(device)
-        trg = trg.to(device)
+         # non_blocking=True 配合 pin_memory=True 提升数据传输效率,
+         # 主要作用是在使用 CUDA 时，允许异步数据传输，意思是数据传输和计算可以并行进行，减少等待时间。
+        src = src.to(device, non_blocking=True)
+        trg = trg.to(device, non_blocking=True)
 
         optimizer.zero_grad()
         output = model(src, trg, src_lens)  # [S_t, B, zh_vocab_size]
@@ -55,6 +57,7 @@ def train(
 
 
 if __name__ == "__main__":
+    print("[train.py] __main__ entered")
     # cinfigurations
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     ENC_EMB_DIM = 512
@@ -88,6 +91,9 @@ if __name__ == "__main__":
         batch_size=BATCH_SIZE,
         shuffle=True,
         collate_fn=train_dataset.collate_fn,
+        num_workers=2,                      # 2 个 worker 并行加载数据
+        pin_memory=(device.type == "cuda"), # 配合 non_blocking=True
+        persistent_workers=True,            # 反复 epoch 时减少 worker 重建开销                
     )
 
     # save and load paths
