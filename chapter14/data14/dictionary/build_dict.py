@@ -59,6 +59,9 @@ def tokenize_en(text):
 def tokenize_cn(text):
     return sp_cn.Encode(text, out_type=int)
 
+def decode_cn(ids):
+    return sp_cn.Decode(ids)
+
 if __name__ == "__main__":
 
 
