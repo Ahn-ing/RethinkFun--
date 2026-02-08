@@ -24,15 +24,15 @@ class RPE(nn.Module):
         pe[:, 0::2] = torch.sin(position * div_term)  # 偶数维度使用正弦函数
         pe[:, 1::2] = torch.cos(position * div_term)  # 奇数维度使用余弦函数
         # 增加batch维度，方便后续直接加到输入上
-        self.pe = pe.unsqueeze(0)  # [1, max_len, hid_dim]
+        pe = pe.unsqueeze(0)  # [1, max_len, hid_dim]
         # 将位置编码注册为模型的缓冲区，这样它不会被更新，但会随模型一起保存和加载
-        self.register_buffer("pe", self.pe)
+        self.register_buffer("pe", pe)
 
     def forward(self, x: torch.Tensor):
         # x[B, S, H] 输入的序列表示， 位置编码需要与输入的时间步长度和隐藏维度匹配
         seq_len = x.size(1)
         # 将位置编码添加到输入上， 注意这里是直接加法， 位置编码提供了位置信息， 输入提供了内容信息，两者结合后每个位置的表示既包含内容又包含位置信息
-        x = x + self.pe[:, :seq_len, :]  # [B, S, H] 位置编码根据输入的时间步长度进行切片
+        x = x + self.pe[:, :seq_len, :]  # type: ignore # [B, S, H] 位置编码根据输入的时间步长度进行切片
         return self.dropout(x)  # 应用 dropout 防止过拟合
 
 

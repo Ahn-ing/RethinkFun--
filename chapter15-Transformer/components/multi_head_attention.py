@@ -3,7 +3,7 @@ import torch.nn as nn
 
 
 # 手搓多头注意力机制
-class MultiHeadAttention(nn.Module):
+class MHA(nn.Module):
     def __init__(self, hid_dim:int, n_heads:int, dropout:float):
         super().__init__()
         assert hid_dim % n_heads == 0, "hid_dim must be divisible by n_heads"
@@ -50,7 +50,7 @@ class MultiHeadAttention(nn.Module):
         x = x.view(B, S_q, self.hid_dim)  # [B, S_q, hid_dim]
         # 6. 最终线性变换
         x = self.fc_o(x)  # [B, S_q, hid_dim]
-        return x, attention  # 返回输出和注意力权重
+        return x  # 返回输出
     
 if __name__ == "__main__":
     print("[multi_head_attention.py] __main__ entered")
@@ -61,12 +61,12 @@ if __name__ == "__main__":
     N_HEADS = 2
     DROPOUT = 0.1
 
-    mha = MultiHeadAttention(hid_dim=HID_DIM, n_heads=N_HEADS, dropout=DROPOUT)
+    mha = MHA(hid_dim=HID_DIM, n_heads=N_HEADS, dropout=DROPOUT)
     query = torch.randn(BATCH_SIZE, SEQ_LEN, HID_DIM)
     key = torch.randn(BATCH_SIZE, SEQ_LEN, HID_DIM)
     value = torch.randn(BATCH_SIZE, SEQ_LEN, HID_DIM)
     mask = None  # 可以根据需要创建掩码
 
-    output, attention = mha(query, key, value, mask)
+    output = mha(query, key, value, mask)
     print("Output shape:", output.shape)          # 应该是 [BATCH_SIZE, SEQ_LEN, HID_DIM]
-    print("Attention shape:", attention.shape)    # 应该是 [BATCH_SIZE, N_HEADS, SEQ_LEN, SEQ_LEN]
+    
