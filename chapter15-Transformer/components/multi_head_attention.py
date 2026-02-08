@@ -39,7 +39,7 @@ class MHA(nn.Module):
         # 应用掩码（如果有的话）
         if mask is not None:
             # mask 中为0的位置表示需要被遮挡的部分， 将这些位置的能量值设为一个非常小的数， 避免它们在 softmax 中产生影响
-            energy = energy.masked_fill(mask == 0, float("-1e9")) # mask [B, 1, 1, S_k] or [B, 1, S_q, S_k]
+            energy = energy.masked_fill(mask == 0, float("-1e9")) # mask [B, 1, 1, S_k] or [B, 1, S_q, S_k], 我的Q不关注K中对应位置为0的部分， 这些部分可能是填充位置或者未来信息
         # 3. 计算注意力权重
         attention = torch.softmax(energy, dim=-1)  # [B, n_heads, S_q, S_k]
         attention = self.dropout(attention)  # 应用 dropout 防止过拟合

@@ -17,10 +17,10 @@ class DecoderBlock(nn.Module):
         self.residual_cross_atten = ResidualConnection(hid_dim, droupout=0.1)
         self.residual_ffn = ResidualConnection(hid_dim, droupout=0.1)
 
-    def forward(self, x:torch.Tensor, enc_output:torch.Tensor, tgt_mask, cross_mask):
-        # x [B, S_tgt, H], enc_output [B, S_src, H], 
+    def forward(self, x:torch.Tensor, enc_output:torch.Tensor, tgt_mask, src_mask):
+        # x [B, S_tgt, H], enc_output [B, S_src, H], src_mask [B, 1, 1, S_src], tgt_mask [B, 1, S_tgt, S_tgt]
         x = self.residual_self_atten(x, lambda x: self.self_atten(x, x, x, tgt_mask))  # [B, S_tgt, H]
-        x = self.residual_cross_atten(x, lambda x: self.cross_atten(x, enc_output, enc_output, cross_mask))# [B, S_tgt, H]
+        x = self.residual_cross_atten(x, lambda x: self.cross_atten(x, enc_output, enc_output, src_mask))# [B, S_tgt, H]
         x = self.residual_ffn(x, self.ffn)  # [B, S_tgt, H]
         return x  # [B, S_tgt, H]
     
@@ -33,9 +33,9 @@ class Decoder(nn.Module):
         self.rpe = RPE(max_len, hid_dim, dropout=0.1)
         self.layer_norm = LN(hid_dim)
 
-    def forward(self, x:torch.Tensor, enc_output:torch.Tensor, tgt_mask, cross_mask):
+    def forward(self, x:torch.Tensor, enc_output:torch.Tensor, tgt_mask, src_mask):
         x = self.rpe(x)  # [B, S_tgt, H]
         for layer in self.layers:
-            x = layer(x, enc_output, tgt_mask, cross_mask)  # [B, S_tgt, H]
+            x = layer(x, enc_output, tgt_mask, src_mask)  # [B, S_tgt, H]
         x = self.layer_norm(x)
         return x  # [B, S_tgt, H]

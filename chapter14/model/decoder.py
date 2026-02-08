@@ -72,7 +72,7 @@ if __name__ == "__main__":
     train_zh_file = Path(__file__).parent.parent / "data14" / "en2cn" / "train_zh.txt"
     demo_dataset = TranslationDataset(train_en_file, train_zh_file)
     demo_dataloader = DataLoader(
-        demo_dataset, batch_size, shuffle=True, collate_fn=demo_dataset.collate_fn
+        demo_dataset, batch_size, shuffle=True, collate_fn=demo_dataset.rnn_collate_fn
     )
     demo_src:torch.Tensor
     demo_lens = None

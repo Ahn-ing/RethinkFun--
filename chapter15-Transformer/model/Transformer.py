@@ -24,15 +24,15 @@ class Transformer(nn.Module):
             if p.dim() > 1:
                 nn.init.xavier_uniform_(p)
 
-    def forward(self, src:torch.Tensor, trg:torch.Tensor, src_mask:torch.Tensor, tgt_mask:torch.Tensor, cross_mask:torch.Tensor):
-        # src [B, S_src], trg [B, S_tgt], src_mask [B, 1, S_src, S_src], cross_mask [B, 1, S_tgt, S_src]
+    def forward(self, src:torch.Tensor, trg:torch.Tensor, src_mask:torch.Tensor, tgt_mask:torch.Tensor):
+        # src [B, S_src], trg [B, S_tgt], src_mask [B, 1, 1, S_src], tgt_mask [B, 1, S_tgt, S_tgt]
         # 1. 词嵌入
         enc_input = self.en_embedding(src) # [B, S_src, H]
         dec_input = self.zh_embedding(trg) # [B, S_tgt, H]
         # 2. 编码器
         enc_output = self.encoder(enc_input, src_mask)  # [B, S_src, H]
         # 3. 解码器
-        dec_output = self.decoder(dec_input, enc_output, tgt_mask, cross_mask)
+        dec_output = self.decoder(dec_input, enc_output, tgt_mask, src_mask)
         # 4. 输出层
         output = self.fc_out(dec_output)  # [B, S_tgt, zh_vocab_size]
         return output  # [B, S_tgt, zh_vocab_size]
@@ -52,9 +52,8 @@ if __name__ == "__main__":
     
     src = torch.randint(0, EN_VOCAB_SIZE, (BATCH_SIZE, S_SRC))  # [B, S_src]
     trg = torch.randint(0, ZH_VOCAB_SIZE, (BATCH_SIZE, S_TGT))  # [B, S_tgt]
-    src_mask = torch.ones(BATCH_SIZE, 1, S_SRC, S_SRC)  # [B, 1, S_src, S_src]
+    src_mask = torch.ones(BATCH_SIZE, 1, 1, S_SRC)  # [B, 1, 1, S_src]
     tgt_mask = torch.ones(BATCH_SIZE, 1, S_TGT, S_TGT)  # [B, 1, S_tgt, S_tgt]
-    cross_mask = torch.ones(BATCH_SIZE, 1, S_TGT, S_SRC)  # [B, 1, S_tgt, S_src]
 
-    output = model(src, trg, src_mask, tgt_mask, cross_mask)
+    output = model(src, trg, src_mask, tgt_mask)
     print(output.shape)  # Expected output: torch.Size([2, 6, zh_vocab_size])

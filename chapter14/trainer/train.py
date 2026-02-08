@@ -90,7 +90,7 @@ if __name__ == "__main__":
         train_dataset,
         batch_size=BATCH_SIZE,
         shuffle=True,
-        collate_fn=train_dataset.collate_fn,
+        collate_fn=train_dataset.rnn_collate_fn,
         num_workers=2,                      # 2 个 worker 并行加载数据
         pin_memory=(device.type == "cuda"), # 配合 non_blocking=True
         persistent_workers=True,            # 反复 epoch 时减少 worker 重建开销                
@@ -119,7 +119,7 @@ if __name__ == "__main__":
             criterion=criterion,
             device=device,
         )
-        print(f"Epoch {epoch+1}/{N_EPOCHS}, Average Loss: {avg_loss*100:.2f}%")
+        print(f"Epoch {epoch+1}/{N_EPOCHS}, Average Loss: {avg_loss:.4f}")
 
         # save best model
         if avg_loss < best_loss:

@@ -59,7 +59,7 @@ if __name__ == "__main__":
     train_en_file = Path(__file__).parent.parent / "data14" / "en2cn" / "train_en.txt"
     train_zh_file = Path(__file__).parent.parent / "data14" / "en2cn" / "train_zh.txt"
     demo_dataset = TranslationDataset(train_en_file, train_zh_file)
-    demo_dataloader = DataLoader(demo_dataset, batch_size=64, shuffle=True, collate_fn=demo_dataset.collate_fn)
+    demo_dataloader = DataLoader(demo_dataset, batch_size=64, shuffle=True, collate_fn=demo_dataset.rnn_collate_fn)
     demo_src = None
     demo_lens = None
     for src, _, src_lens, _ in demo_dataloader:

@@ -27,17 +27,19 @@ class TranslationDataset(Dataset):
         trg_tokenizer=tokenize_cn,
         max_len=100,
         cache_path: str | None = None,
+        batch_first: bool = False,
     ):
         super().__init__()
         self.src_tokenizer = src_tokenizer
         self.trg_tokenizer = trg_tokenizer
         self.max_len = max_len
+        self.batch_first = batch_first
 
         cache_file = Path(cache_path) if cache_path else Path(__file__).parent / "cache" / "train_data.pt"
         cache_file.parent.mkdir(parents=True, exist_ok=True)
 
         if not cache_file.exists():
-            packed = self.data_process(src_file, trg_file, max_len=100)
+            packed = self.data_process(src_file, trg_file)
             self.src_tokens, self.src_offsets, self.trg_tokens, self.trg_offsets = packed
             torch.save(
                 {
@@ -45,7 +47,6 @@ class TranslationDataset(Dataset):
                     "src_offsets": self.src_offsets,
                     "trg_tokens": self.trg_tokens,
                     "trg_offsets": self.trg_offsets,
-                    "max_len": max_len,
                 },
                 cache_file,
             )
@@ -55,10 +56,9 @@ class TranslationDataset(Dataset):
             self.src_offsets = obj["src_offsets"]
             self.trg_tokens = obj["trg_tokens"]
             self.trg_offsets = obj["trg_offsets"]
-            
         
 
-    def data_process(self, src_file, trg_file, max_len=100):
+    def data_process(self, src_file, trg_file):
         with open(src_file, encoding="utf-8") as f:
             src_lines = f.read().splitlines()
         with open(trg_file, encoding="utf-8") as f:
@@ -76,7 +76,7 @@ class TranslationDataset(Dataset):
         for src, trg in zip(src_lines, trg_lines):
             src_ids = [BOS_ID] + self.src_tokenizer(src) + [EOS_ID]
             trg_ids = [BOS_ID] + self.trg_tokenizer(trg) + [EOS_ID]
-            if len(src_ids) <= max_len and len(trg_ids) <= max_len:
+            if len(src_ids) <= self.max_len and len(trg_ids) <= self.max_len:
                 src_buf.extend(src_ids)
                 trg_buf.extend(trg_ids)
                 src_offsets.append(len(src_buf))
@@ -101,7 +101,7 @@ class TranslationDataset(Dataset):
         return src, trg
 
     @staticmethod
-    def collate_fn(batch):
+    def rnn_collate_fn(batch):
         src_batch, trg_batch = zip(*batch)
         src_lens = [len(x) for x in src_batch]
         trg_lens = [len(x) for x in trg_batch]
@@ -109,6 +109,14 @@ class TranslationDataset(Dataset):
         trg_pad = nn.utils.rnn.pad_sequence(list(trg_batch), padding_value=PAD_ID)
         return src_pad, trg_pad, src_lens, trg_lens
 
+    @staticmethod
+    def transformer_collate_fn(batch):
+        src_batch, trg_batch = zip(*batch)
+        src_lens = [len(x) for x in src_batch]
+        trg_lens = [len(x) for x in trg_batch]
+        src_pad = nn.utils.rnn.pad_sequence(list(src_batch), padding_value=PAD_ID, batch_first=True)
+        trg_pad = nn.utils.rnn.pad_sequence(list(trg_batch), padding_value=PAD_ID, batch_first=True)
+        return src_pad, trg_pad, src_lens, trg_lens
 
 if __name__ == "__main__":
     train_en_file = r"chapter14\data14\en2cn\train_en.txt"
@@ -120,7 +128,7 @@ if __name__ == "__main__":
         tokenize_cn,
     )
     demo_dataloader = DataLoader(
-        dataset, batch_size=4, shuffle=True, collate_fn=dataset.collate_fn
+        dataset, batch_size=4, shuffle=True, collate_fn=dataset.rnn_collate_fn
     )
     for src, trg, _, _ in demo_dataloader:
         print(src.shape, trg.shape)
