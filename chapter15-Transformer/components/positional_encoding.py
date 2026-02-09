@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 
-class RPE(nn.Module):
+class APE(nn.Module):
     def __init__(self, max_len: int, hid_dim: int, dropout: float):
         super().__init__()
         assert (

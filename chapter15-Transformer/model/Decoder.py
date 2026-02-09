@@ -4,7 +4,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 import torch
 import torch.nn as nn
-from components import FFN, LN, MHA, RPE, ResidualConnection
+from components import APE, FFN, LN, MHA, ResidualConnection
 
 
 class DecoderBlock(nn.Module):
@@ -30,11 +30,11 @@ class Decoder(nn.Module):
         self.layers = nn.ModuleList([
             DecoderBlock(hid_dim, n_heads) for _ in range(n_layers)
         ])
-        self.rpe = RPE(max_len, hid_dim, dropout=0.1)
+        self.ape = APE(max_len, hid_dim, dropout=0.1)
         self.layer_norm = LN(hid_dim)
 
     def forward(self, x:torch.Tensor, enc_output:torch.Tensor, tgt_mask, src_mask):
-        x = self.rpe(x)  # [B, S_tgt, H]
+        x = self.ape(x)  # [B, S_tgt, H]
         for layer in self.layers:
             x = layer(x, enc_output, tgt_mask, src_mask)  # [B, S_tgt, H]
         x = self.layer_norm(x)

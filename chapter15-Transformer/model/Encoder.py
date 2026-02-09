@@ -5,7 +5,7 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 import torch
 import torch.nn as nn
-from components import FFN, LN, MHA, RPE, ResidualConnection
+from components import APE, FFN, LN, MHA, ResidualConnection
 
 
 class EncoderBlock(nn.Module):
@@ -25,7 +25,7 @@ class EncoderBlock(nn.Module):
 class Encoder(nn.Module):
     def __init__(self, hid_dim:int, n_heads:int, max_len:int, n_layers:int):
         super().__init__()
-        self.rpe = RPE(max_len, hid_dim, dropout=0.1)
+        self.ape = APE(max_len, hid_dim, dropout=0.1)
         self.layers = nn.ModuleList([
             EncoderBlock(hid_dim, n_heads) for _ in range(n_layers)
         ])
@@ -33,7 +33,7 @@ class Encoder(nn.Module):
 
     def forward(self, x:torch.Tensor, mask:torch.Tensor):
         # x [B, S, H], mask [B, 1, S, S]
-        x = self.rpe(x)  # [B, S, H]
+        x = self.ape(x)  # [B, S, H]
         for layer in self.layers:
             x = layer(x, mask)  # [B, S, H]
         x = self.layer_norm(x)  # [B, S, H]
