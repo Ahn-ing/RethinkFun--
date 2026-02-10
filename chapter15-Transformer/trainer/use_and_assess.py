@@ -86,8 +86,6 @@ class TranslationModel(nn.Module):
                     dec_input, enc_output, tgt_mask, src_mask
                 )  # [1, S_tgt, H]
                 output = self.model.fc_out(dec_output)  # [1, S_tgt, ZH_VOCAB_SIZE]
-                # EOS的概率
-                print(f"P_EOS: {output[0, -1, EOS_ID].item()}")
                 # 取最后一个时间步的预测结果
                 # [1, S_tgt, ZH_VOCAB_SIZE] -> [1, S_tgt]
                 pre_token = output.argmax(-1)[:, -1].item()  # 标量
